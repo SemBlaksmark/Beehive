@@ -8,15 +8,24 @@
 }
 body {
   margin: 0;
-  display: flex;
+  display: grid;
+  grid-template-areas: 
+    "people hive";
+  grid-template-columns: auto 1fr;
 }
 #hive {
+  overflow: hidden;
   background-image: url("beehive.png");
   background-color: rgba(0, 0, 140, 0.5);
   background-blend-mode: luminosity;
   background-size: cover; 
   background-repeat: no-repeat;
   padding: 0 20px;
+  min-height: 100vh;
+}
+#people {
+  position: sticky;
+  top: 0;
 }
 ul {
   margin: 0;
@@ -62,6 +71,7 @@ li.affiliate {
   position: relative;
   pointer-events: none;
   user-select: none;
+  min-width: var(--hexagon-width);
 }
 .hex.hidden {
   visibility: hidden;
@@ -74,7 +84,6 @@ li.affiliate {
 .hex text {
   fill: var(--accent-color);
   font-weight: bold;
-  font-size: .9em;
 }
 .hex.affiliate polygon {
   fill: var(--affiliate-color);

@@ -2,42 +2,43 @@
   const people = await postToApi({ command: 'getPeople' });
   const cells = await postToApi({ command: 'getCells' });
   const roles = await postToApi({ command: 'getRoles' });
-  const MAX_CELLS_PER_ROW = 10;
-  const HEXAGON_WIDTH = getComputedStyle(document.documentElement).getPropertyValue('--hexagon-width').match(/\d+/)[0];
-  let orderedCells = {};
-  cells.forEach(cell => {
-    orderedCells[cell.importance] = orderedCells[cell.importance] || [];
-    orderedCells[cell.importance].push(cell);
+  const hexagonWidth = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hexagon-width'));
+  const resizeObs = new ResizeObserver(entries => {
+    document.querySelector('#hive').innerHTML = '';
+    drawCells(entries[entries.length-1].contentRect.width);
   });
-  Object.entries(orderedCells).forEach(([importance, arr]) => {
-    const splits = Math.ceil(arr.length / MAX_CELLS_PER_ROW);
-    const sliceLength = Math.ceil(arr.length / splits);
-    let arr2d = [];
-    for (let i = 0; i < splits; i++) {
-      arr2d.push(arr.slice(i * sliceLength, (i+1) * sliceLength));
-    }
-    orderedCells[importance] = arr2d;
-  });
+  resizeObs.observe(document.querySelector('#hive'));
 
   document.querySelector('#people').insertAdjacentHTML('afterbegin', /*html*/`
     ${people.map(person => `<li id="p${person.id}">${person.firstname} ${person.nickname ? `'${person.nickname}'` : ''} ${person.lastname}, ${person.initials}</li>`).join('')}
   `);
   document.querySelector('#people').addEventListener('click', peopleClick);
-  document.querySelector('#hive').insertAdjacentHTML('beforeEnd', /*html*/`
+  document.querySelector('#hive').addEventListener('click', cellClick);
+
+  function drawCells(width) {
+    const cellsPerRow = Math.max(1, Math.floor((width - .5 * hexagonWidth) / (1 + hexagonWidth)));
+    let orderedCells = {};
+    cells.forEach(cell => {
+      orderedCells[cell.importance] = orderedCells[cell.importance] || [];
+      orderedCells[cell.importance].push(cell);
+    });
+    Object.entries(orderedCells).forEach(([importance, arr]) => {
+      const splits = Math.ceil(arr.length / cellsPerRow);
+      const sliceLength = Math.ceil(arr.length / splits);
+      let arr2d = [];
+      for (let i = 0; i < splits; i++) {
+        arr2d.push(arr.slice(i * sliceLength, (i + 1) * sliceLength));
+      }
+      orderedCells[importance] = arr2d;
+    });
+    document.querySelector('#hive').insertAdjacentHTML('beforeEnd', /*html*/`
     ${Object.entries(orderedCells).map(([importance, arr2d]) => `${arr2d.map(row => `<div class="row ${[...new Set(row.map(cell => cell.type))].join(' ')}">
       ${row.map(cell => {
-        const w = HEXAGON_WIDTH, h = HEXAGON_WIDTH * 1.1547005;
-        return /*html*/`
-      <svg id="c${cell.id}" class="hex" width=${w} height=${h}>
-        <polygon points="${w/2},0 ${w},${h/4} ${w},${h*3/4} ${w/2},${h} 0,${h*3/4} 0,${h/4}" />
-        <text x="${w/2}" y="${h/2}" text-anchor="middle">${cell.name}</text>
-      </svg>
-    `}).join('')}
-    </div>`).join('')}
-  `).join('')}`
-  );
-  document.querySelector('.row.client-minor').classList.add('spacer');
-  document.querySelector('#hive').addEventListener('click', cellClick);
+      const w = hexagonWidth, h = hexagonWidth * 1.1547005;
+      const words = cell.name.split(/\s/g);
+      return /*html*/`<svg id="c${cell.id}" class="hex" width=${w} height=${h}><polygon points="${w / 2},0 ${w},${h / 4} ${w},${h * 3 / 4} ${w / 2},${h} 0,${h * 3 / 4} 0,${h / 4}" /><text x="${w / 2}" y="${h / 2 - 8 * (words.length-1) - 16}" text-anchor="middle">${words.map(word => `<tspan x=${w / 2} dy="16">${word}</tspan>`).join('')}</text></svg>`}).join('')}</div>`).join('')}`).join('')}`);
+    document.querySelector('.row.client-minor').classList.add('spacer');
+  }
 
   function peopleClick(e) {
     if (e.target.tagName !== 'LI') return;
@@ -50,8 +51,8 @@
 
       const cellRelated = cell.people.find(person => person.id === id);
       if (cellRelated) {
-         el.classList.remove('hidden');
-         el.classList.add(cellRelated.role)
+        el.classList.remove('hidden');
+        el.classList.add(cellRelated.role)
       }
       else el.classList.add('hidden');
     });
@@ -74,13 +75,13 @@
       if (person) li.classList.add(person.role);
     });
   }
-})()
 
-async function postToApi(body) {
-  const response = await fetch('http://beehive.ecapacity.dk/data.php', {
-    method: 'POST',
-    headers: {'Content-type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  return await response.json();
-}
+  async function postToApi(body) {
+    const response = await fetch('http://beehive.ecapacity.dk/data.php', {
+      method: 'POST',
+      headers: { 'Content-type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    return await response.json();
+  }
+})()
