@@ -1,0 +1,93 @@
+
+:root {
+  --accent-color: saddlebrown;
+  --selected-color: gold;
+  --member-color: goldenrod;
+  --affiliate-color: #9BAABF;
+  --hexagon-width: 128px;
+}
+body {
+  margin: 0;
+  display: flex;
+}
+#hive {
+  background-image: url("beehive.png");
+  background-color: rgba(0, 0, 140, 0.5);
+  background-blend-mode: luminosity;
+  background-size: cover; 
+  background-repeat: no-repeat;
+  padding: 0 20px;
+}
+ul {
+  margin: 0;
+  padding: 0px;
+  list-style: none;
+}
+
+li {
+  color: var(--accent-color);
+  padding: 2px 8px;
+  white-space: nowrap;
+  cursor: default;
+  user-select: none;
+}
+li.selected {
+  color: black;
+  background: var(--selected-color);
+}
+li.member {
+  background: var(--member-color);
+}
+li.affiliate {
+  color: darkslategray;
+  background: var(--affiliate-color);
+}
+.row {
+  display: flex;
+}
+.row:not(:first-child) {
+  margin-top: calc(-0.296875 * var(--hexagon-width) + 2px);
+}
+
+.row:nth-child(2n) {
+  margin-left: calc(0.5 * var(--hexagon-width) + 1px);
+}
+
+.row.spacer {
+  margin-top: 0px;
+}
+
+.hex {
+  margin-right: 2px;
+  position: relative;
+  pointer-events: none;
+  user-select: none;
+}
+.hex.hidden {
+  visibility: hidden;
+}
+
+.hex polygon {
+  fill: var(--member-color);
+  pointer-events: fill;
+}
+.hex text {
+  fill: var(--accent-color);
+  font-weight: bold;
+  font-size: .9em;
+}
+.hex.affiliate polygon {
+  fill: var(--affiliate-color);
+}
+.hex.affiliate text {
+  fill: darkslategray;
+}
+.hex.selected polygon {
+  fill: var(--selected-color);
+}
+.hex.selected text {
+  fill: black;
+}
+.hex.hidden polygon {
+  pointer-events: none;
+}
