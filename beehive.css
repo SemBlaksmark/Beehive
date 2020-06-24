@@ -62,7 +62,7 @@ li.affiliate {
   margin-left: calc(0.5 * var(--hexagon-width) + 1px);
 }
 
-.row.spacer {
+:not(.client-minor) + .client-minor {
   margin-top: 0px;
 }
 

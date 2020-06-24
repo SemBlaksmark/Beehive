@@ -4,40 +4,49 @@
   const roles = await postToApi({ command: 'getRoles' });
   const hexagonWidth = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hexagon-width'));
   const resizeObs = new ResizeObserver(entries => {
+    const currentSelection = [...document.querySelectorAll('.hex.selected')].map(hex => hex.id);
+    const currentPerson = document.querySelector('#people .selected');
     document.querySelector('#hive').innerHTML = '';
-    drawCells(entries[entries.length-1].contentRect.width);
+    drawCells(entries[entries.length - 1].contentRect.width);
+    currentSelection.forEach(id => document.querySelector('#' + id).classList.add('selected'));
+    currentPerson?.click();
   });
   resizeObs.observe(document.querySelector('#hive'));
 
-  document.querySelector('#people').insertAdjacentHTML('afterbegin', /*html*/`
+  document.querySelector('#people').insertAdjacentHTML('afterbegin', `
     ${people.map(person => `<li id="p${person.id}">${person.firstname} ${person.nickname ? `'${person.nickname}'` : ''} ${person.lastname}, ${person.initials}</li>`).join('')}
   `);
   document.querySelector('#people').addEventListener('click', peopleClick);
   document.querySelector('#hive').addEventListener('click', cellClick);
 
-  function drawCells(width) {
+  function drawCells(width) {    const currentSelection = [...document.querySelectorAll('.hex.selected')].map(hex => parseInt(hex.id.substr(1)));
     const cellsPerRow = Math.max(1, Math.floor((width - .5 * hexagonWidth) / (1 + hexagonWidth)));
-    let orderedCells = {};
+    let orderedCells = [];
     cells.forEach(cell => {
       orderedCells[cell.importance] = orderedCells[cell.importance] || [];
       orderedCells[cell.importance].push(cell);
     });
-    Object.entries(orderedCells).forEach(([importance, arr]) => {
-      const splits = Math.ceil(arr.length / cellsPerRow);
-      const sliceLength = Math.ceil(arr.length / splits);
-      let arr2d = [];
+    orderedCells.filter(row => row);
+    let cellsLayout = [];
+    orderedCells.forEach(row => {
+      const splits = Math.ceil(row.length / cellsPerRow);
+      const sliceLength = Math.ceil(row.length / splits);
       for (let i = 0; i < splits; i++) {
-        arr2d.push(arr.slice(i * sliceLength, (i + 1) * sliceLength));
+        cellsLayout.push(row.slice(i * sliceLength, (i + 1) * sliceLength));
       }
-      orderedCells[importance] = arr2d;
     });
-    document.querySelector('#hive').insertAdjacentHTML('beforeEnd', /*html*/`
-    ${Object.entries(orderedCells).map(([importance, arr2d]) => `${arr2d.map(row => `<div class="row ${[...new Set(row.map(cell => cell.type))].join(' ')}">
+    document.querySelector('#hive').insertAdjacentHTML('beforeEnd', cellsLayout.map(row => `<div class="row ${[...new Set(row.map(cell => cell.type))].join(' ')}">
       ${row.map(cell => {
       const w = hexagonWidth, h = hexagonWidth * 1.1547005;
       const words = cell.name.split(/\s/g);
-      return /*html*/`<svg id="c${cell.id}" class="hex" width=${w} height=${h}><polygon points="${w / 2},0 ${w},${h / 4} ${w},${h * 3 / 4} ${w / 2},${h} 0,${h * 3 / 4} 0,${h / 4}" /><text x="${w / 2}" y="${h / 2 - 8 * (words.length-1) - 16}" text-anchor="middle">${words.map(word => `<tspan x=${w / 2} dy="16">${word}</tspan>`).join('')}</text></svg>`}).join('')}</div>`).join('')}`).join('')}`);
-    document.querySelector('.row.client-minor').classList.add('spacer');
+      return `<svg id="c${cell.id}" class="hex" width=${w} height=${h}>
+        <polygon points="${w / 2},0 ${w},${h / 4} ${w},${h * 3 / 4} ${w / 2},${h} 0,${h * 3 / 4} 0,${h / 4}" />
+          <text x="${w / 2}" y="${h / 2 - 8 * (words.length - 1) - 16}" text-anchor="middle">
+            ${words.map(word => `<tspan x=${w / 2} dy="16">${word}</tspan>`).join('')}
+          </text>
+        </svg>`
+      }).join('')}
+    </div>`).join(''));
   }
 
   function peopleClick(e) {
