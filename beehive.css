@@ -105,18 +105,27 @@ li {
   white-space: nowrap;
   cursor: default;
   user-select: none;
-  transition: background-color .5s;
+  background-image: linear-gradient(to right, rgba(100, 100, 180, 0.2) 50%, transparent 50%);
+  background-size: 200% 200%;
+  background-position: 100%;
+  transition: background-position .5s;
 }
 li.selected {
   color: black;
-  background: var(--selected-color);
+  background-image: linear-gradient(to right, var(--selected-color) 50%, transparent 50%);
+  background-size: 200% 200%;
+  background-position: 0%;
 }
 li.member {
-  background: var(--member-color);
+  background-image: linear-gradient(to right, var(--member-color) 50%, transparent 50%);
+  background-size: 200% 200%;
+  background-position: 0%;
 }
 li.affiliate {
   color: darkslategray;
-  background: var(--affiliate-color);
+  background-image: linear-gradient(to right, var(--affiliate-color) 50%, transparent 50%);
+  background-size: 200% 200%;
+  background-position: 0%;
 }
 .row {
   display: flex;
