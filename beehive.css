@@ -79,6 +79,7 @@ li {
   white-space: nowrap;
   cursor: default;
   user-select: none;
+  transition: background-color .5s;
 }
 li.selected {
   color: black;
