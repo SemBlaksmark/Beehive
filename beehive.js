@@ -3,7 +3,7 @@
   const cells = await postToApi({ command: 'getCells' });
   const roles = await postToApi({ command: 'getRoles' });
   const resizeObs = new ResizeObserver(entries => {
-    const classMap = Object.fromEntries([...document.querySelectorAll('.hex')].map(cell => [cell.id.substr(1), [...cell.classList].filter(cls => cls !== 'hex' )]));
+    const classMap = Object.fromEntries([...document.querySelectorAll('.hex')].map(cell => [cell.id.substr(1), [...cell.classList]]));
     document.querySelector('#hive').innerHTML = '';
     drawCells(entries[entries.length - 1].contentRect.width, classMap);
   });
@@ -37,7 +37,7 @@
       ${row.map(cell => {
       const w = hexagonWidth, h = hexagonWidth * 1.1547005;
       const words = cell.name.split(/\s/g);
-      return `<svg id="c${cell.id}" class="${classMap[cell.id] ? ['hex', ...classMap[cell.id]].join(' ') : 'hex'}" width=${w} height=${h}>
+      return `<svg id="c${cell.id}" class="${classMap[cell.id] ? classMap[cell.id].join(' ') : 'hex'}" width=${w} height=${h}>
         <polygon points="${w / 2},0 ${w},${h / 4} ${w},${h * 3 / 4} ${w / 2},${h} 0,${h * 3 / 4} 0,${h / 4}" />
           <text x="${w / 2}" y="${h / 2 - words.length * remSize / 2}" text-anchor="middle">
             ${words.map(word => `<tspan x=${w / 2} dy="${remSize}">${word}</tspan>`).join('')}
