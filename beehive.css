@@ -67,7 +67,6 @@ body {
   }
 
   #people ul {
-    margin-top: 8px;
     position: sticky;
     top: 0;
     list-style: none;
@@ -91,6 +90,7 @@ body {
   }
 
   #people ul {
+    margin-top: 8px;
     height: 30vh;
     display: flex;
     flex-direction: column;
