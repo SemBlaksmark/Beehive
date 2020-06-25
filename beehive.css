@@ -4,16 +4,15 @@
   --selected-color: gold;
   --member-color: goldenrod;
   --affiliate-color: #9BAABF;
-  --hexagon-width: 128px;
+  --hexagon-width: 8rem; /* MUST BE IN REM UNITS */
 }
+
 body {
   margin: 0;
-  display: grid;
-  grid-template-areas: 
-    "people hive";
-  grid-template-columns: auto 1fr;
 }
+
 #hive {
+  grid-area: hive;
   overflow: hidden;
   background-image: url("beehive.png");
   background-color: rgba(0, 0, 140, 0.5);
@@ -24,13 +23,54 @@ body {
   min-height: 100vh;
 }
 #people {
-  position: sticky;
-  top: 0;
+  grid-area: 'people';
 }
-ul {
+
+#people ul {
   margin: 0;
   padding: 0px;
   list-style: none;
+}
+
+@media screen and (min-width: 1000px) {
+  body {
+    display: grid;
+    grid-template-areas: 
+      "people hive";
+    grid-template-columns: auto 1fr;
+  }
+
+  #people ul {
+    position: sticky;
+    top: 0;
+    margin: 0;
+    padding: 0px;
+    list-style: none;
+  }
+}
+
+@media screen and (max-width: 999px) {
+  body {
+    display: grid;
+    grid-template-areas: 
+      "hive"
+      "people";
+    grid-template-columns: 1fr;
+  }
+
+  #people {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    z-index: 10000;
+  }
+
+  #people ul {
+    height: 30vh;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
 }
 
 li {

@@ -2,24 +2,28 @@
   const people = await postToApi({ command: 'getPeople' });
   const cells = await postToApi({ command: 'getCells' });
   const roles = await postToApi({ command: 'getRoles' });
-  const hexagonWidth = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hexagon-width'));
   const resizeObs = new ResizeObserver(entries => {
     const currentSelection = [...document.querySelectorAll('.hex.selected')].map(hex => hex.id);
     const currentPerson = document.querySelector('#people .selected');
     document.querySelector('#hive').innerHTML = '';
     drawCells(entries[entries.length - 1].contentRect.width);
-    currentSelection.forEach(id => document.querySelector('#' + id).classList.add('selected'));
+    if (document.querySelector('#people').style.width < 999) {
+      console.log('resize me');
+    }
+    currentSelection.forEach(id => document.getElementById(id).classList.add('selected'));
     currentPerson?.click();
   });
   resizeObs.observe(document.querySelector('#hive'));
 
-  document.querySelector('#people').insertAdjacentHTML('afterbegin', `
+  document.querySelector('#people ul').insertAdjacentHTML('afterbegin', `
     ${people.map(person => `<li id="p${person.id}">${person.firstname} ${person.nickname ? `'${person.nickname}'` : ''} ${person.lastname}, ${person.initials}</li>`).join('')}
   `);
   document.querySelector('#people').addEventListener('click', peopleClick);
   document.querySelector('#hive').addEventListener('click', cellClick);
 
-  function drawCells(width) {    const currentSelection = [...document.querySelectorAll('.hex.selected')].map(hex => parseInt(hex.id.substr(1)));
+  function drawCells(width) {
+    const remSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+    const hexagonWidth = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hexagon-width')) * remSize;
     const cellsPerRow = Math.max(1, Math.floor((width - .5 * hexagonWidth) / (1 + hexagonWidth)));
     let orderedCells = [];
     cells.forEach(cell => {
@@ -41,8 +45,8 @@
       const words = cell.name.split(/\s/g);
       return `<svg id="c${cell.id}" class="hex" width=${w} height=${h}>
         <polygon points="${w / 2},0 ${w},${h / 4} ${w},${h * 3 / 4} ${w / 2},${h} 0,${h * 3 / 4} 0,${h / 4}" />
-          <text x="${w / 2}" y="${h / 2 - 8 * (words.length - 1) - 16}" text-anchor="middle">
-            ${words.map(word => `<tspan x=${w / 2} dy="16">${word}</tspan>`).join('')}
+          <text x="${w / 2}" y="${h / 2 - words.length * remSize / 2}" text-anchor="middle">
+            ${words.map(word => `<tspan x=${w / 2} dy="${remSize}">${word}</tspan>`).join('')}
           </text>
         </svg>`
       }).join('')}
