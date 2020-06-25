@@ -12,7 +12,6 @@
   let people, cells, roles;
   try {
     [people, cells, roles] = await Promise.all((await Promise.all(data)).map(response => response.json()));
-    console.log(people, cells, roles);
     document.querySelector('#spinner-container').classList.remove('show');
   } catch (e) {
     document.querySelector('#spinner-container').classList.add('error');
