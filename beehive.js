@@ -4,7 +4,21 @@
     postToApi({ command: 'getCells' }),
     postToApi({ command: 'getRoles' }),
   ];
-  const [people, cells, roles] = await Promise.all((await Promise.all(data)).map(response => response.json()));
+  document.querySelector('#spinner-container').classList.add('show');
+  const spinW = 200;
+  document.querySelector('#spinner-container').insertAdjacentHTML('afterbegin', `<svg id="spinner" class="animate" width="${spinW}" height="${spinW * 1.1547005}">
+    <polygon points="100,0 ${spinW},${(spinW * 1.1547005) / 4} ${spinW},${(spinW * 1.1547005) * 3 / 4} ${spinW / 2},${(spinW * 1.1547005)} 0,${(spinW * 1.1547005) * 3 / 4} 0,${(spinW * 1.1547005) / 4}" />
+  </svg>`);
+  let people, cells, roles;
+  try {
+    [people, cells, roles] = await Promise.all((await Promise.all(data)).map(response => response.json()));
+    console.log(people, cells, roles);
+    document.querySelector('#spinner-container').classList.remove('show');
+  } catch (e) {
+    document.querySelector('#spinner-container').classList.add('error');
+    document.querySelector('#spinner').classList.remove('animate');
+    return false;
+  }
   const resizeObs = new ResizeObserver(entries => {
     const classMap = Object.fromEntries([...document.querySelectorAll('.hex')].map(cell => [cell.id.substr(1), [...cell.classList]]));
     document.querySelector('#hive').innerHTML = '';

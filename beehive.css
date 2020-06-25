@@ -10,6 +10,30 @@
 body {
   margin: 0;
 }
+#spinner-container {
+  display: none;
+}
+#spinner-container.show {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+#spinner {
+  fill: var(--member-color);
+}
+#spinner.animate {
+  animation: spin 5s linear 0s infinite;
+}
+#spinner-container.error #spinner {
+  fill: red;
+}
+@keyframes spin{
+  from { transform: rotate(0deg)}
+  to { transform: rotate(360deg)}
+}
 
 #hive {
   grid-area: hive;
