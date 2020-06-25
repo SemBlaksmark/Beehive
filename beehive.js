@@ -1,7 +1,10 @@
 (async () => {
-  const people = await postToApi({ command: 'getPeople' });
-  const cells = await postToApi({ command: 'getCells' });
-  const roles = await postToApi({ command: 'getRoles' });
+  let data = [
+    postToApi({ command: 'getPeople' }),
+    postToApi({ command: 'getCells' }),
+    postToApi({ command: 'getRoles' }),
+  ];
+  const [people, cells, roles] = await Promise.all((await Promise.all(data)).map(response => response.json()));
   const resizeObs = new ResizeObserver(entries => {
     const classMap = Object.fromEntries([...document.querySelectorAll('.hex')].map(cell => [cell.id.substr(1), [...cell.classList]]));
     document.querySelector('#hive').innerHTML = '';
@@ -83,12 +86,11 @@
     });
   }
 
-  async function postToApi(body) {
-    const response = await fetch('http://beehive.ecapacity.dk/data.php', {
+  function postToApi(body) {
+    return fetch('http://beehive.ecapacity.dk/data.php', {
       method: 'POST',
       headers: { 'Content-type': 'application/json' },
       body: JSON.stringify(body)
     });
-    return await response.json();
   }
 })()
