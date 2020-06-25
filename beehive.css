@@ -14,6 +14,8 @@ body {
   display: none;
 }
 #spinner-container.show {
+  z-index: 10000;
+  background-color: rgba(0, 0, 0, .6);
   display: flex;
   justify-content: center;
   align-items: center;
