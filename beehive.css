@@ -67,10 +67,9 @@ body {
   }
 
   #people ul {
+    margin-top: 8px;
     position: sticky;
     top: 0;
-    margin: 0;
-    padding: 0px;
     list-style: none;
   }
 }
