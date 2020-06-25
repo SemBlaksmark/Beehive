@@ -112,9 +112,12 @@ li.affiliate {
   pointer-events: none;
   user-select: none;
   min-width: var(--hexagon-width);
+  transition: .5s opacity, .5s transform;
 }
 .hex.hidden {
-  visibility: hidden;
+  /*visibility: hidden;*/
+  opacity: 0;
+  transform: scale(.2);
 }
 
 .hex polygon {
