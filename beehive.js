@@ -3,15 +3,9 @@
   const cells = await postToApi({ command: 'getCells' });
   const roles = await postToApi({ command: 'getRoles' });
   const resizeObs = new ResizeObserver(entries => {
-    const currentSelection = [...document.querySelectorAll('.hex.selected')].map(hex => hex.id);
-    const currentPerson = document.querySelector('#people .selected');
+    const classMap = Object.fromEntries([...document.querySelectorAll('.hex')].map(cell => [cell.id.substr(1), [...cell.classList].filter(cls => cls !== 'hex' )]));
     document.querySelector('#hive').innerHTML = '';
-    drawCells(entries[entries.length - 1].contentRect.width);
-    if (document.querySelector('#people').style.width < 999) {
-      console.log('resize me');
-    }
-    currentSelection.forEach(id => document.getElementById(id).classList.add('selected'));
-    currentPerson?.click();
+    drawCells(entries[entries.length - 1].contentRect.width, classMap);
   });
   resizeObs.observe(document.querySelector('#hive'));
 
@@ -21,7 +15,7 @@
   document.querySelector('#people').addEventListener('click', peopleClick);
   document.querySelector('#hive').addEventListener('click', cellClick);
 
-  function drawCells(width) {
+  function drawCells(width, classMap) {
     const remSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
     const hexagonWidth = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hexagon-width')) * remSize;
     const cellsPerRow = Math.max(1, Math.floor((width - .5 * hexagonWidth) / (1 + hexagonWidth)));
@@ -43,7 +37,7 @@
       ${row.map(cell => {
       const w = hexagonWidth, h = hexagonWidth * 1.1547005;
       const words = cell.name.split(/\s/g);
-      return `<svg id="c${cell.id}" class="hex" width=${w} height=${h}>
+      return `<svg id="c${cell.id}" class="${classMap[cell.id] ? ['hex', ...classMap[cell.id]].join(' ') : 'hex'}" width=${w} height=${h}>
         <polygon points="${w / 2},0 ${w},${h / 4} ${w},${h * 3 / 4} ${w / 2},${h} 0,${h * 3 / 4} 0,${h / 4}" />
           <text x="${w / 2}" y="${h / 2 - words.length * remSize / 2}" text-anchor="middle">
             ${words.map(word => `<tspan x=${w / 2} dy="${remSize}">${word}</tspan>`).join('')}
